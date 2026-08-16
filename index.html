@@ -375,7 +375,7 @@
             word-break: break-all;
             line-height: 1.45;
             margin: 10px 0 16px;
-            max-height: 110px;
+            max-height: 120px;
             overflow-y: auto;
         }
 
@@ -441,7 +441,7 @@
                     </div>
                     <div class="spec-item">
                         Локации в ключе
-                        <b>5 серверов (DE, NL, FI, RU, US)</b>
+                        <b>9 серверов (DE, SE, FI, EE, PL, RU, LT, LV...)</b>
                     </div>
                 </div>
             </div>
@@ -483,9 +483,9 @@
                 <div style="width: 40px;"></div>
             </div>
 
-            <!-- Ввод промокода -->
+            <!-- Ввод промокода (1 разовая активация) -->
             <div class="promo-container">
-                <input type="text" id="promo-input-field" class="promo-input" placeholder="ПРОМОКОД (НАПРИМЕР: SILO50)">
+                <input type="text" id="promo-input-field" class="promo-input" placeholder="ПРОМОКОД (1 АКТИВАЦИЯ)">
                 <button class="promo-btn" onclick="applyPromoInput()">Применить</button>
             </div>
 
@@ -493,7 +493,7 @@
                 <div class="plan-box selected" onclick="pickPlan(this, 30, 99)">
                     <div class="plan-meta">
                         <h4>1 Месяц</h4>
-                        <span>Базовый доступ (5 серверов)</span>
+                        <span>Все локации (9 серверов)</span>
                     </div>
                     <div class="plan-pricing">
                         <div class="price-main" id="price-30">99 ₽</div>
@@ -535,7 +535,7 @@
         <div id="screen-setup" class="screen">
             <div class="nav-header">
                 <div class="btn-circle" onclick="nav('home')">‹</div>
-                <div style="font-size: 14px; font-weight: 700;">Подключение (Все сервера)</div>
+                <div style="font-size: 14px; font-weight: 700;">Подключение серверов</div>
                 <div style="width: 40px;"></div>
             </div>
 
@@ -550,8 +550,8 @@
             <div class="step-card">
                 <div class="step-bubble">2</div>
                 <div class="step-body">
-                    <h5>Импортируйте комплект серверов</h5>
-                    <p>Скопируйте ключ кнопкой ниже и нажмите в приложении <b>«Импорт из буфера обмена»</b>. Все 5 локаций добавятся автоматически.</p>
+                    <h5>Импортируйте список серверов</h5>
+                    <p>Скопируйте ключ и нажмите в приложении <b>«Импорт из буфера обмена»</b>. Все локации добавятся списком.</p>
                 </div>
             </div>
 
@@ -560,7 +560,7 @@
             </div>
 
             <button class="btn-primary" onclick="copyKey()">
-                📋 Скопировать комплект серверов
+                📋 Скопировать список серверов
             </button>
         </div>
 
@@ -588,26 +588,26 @@
         let plan = { days: 30, price: 99 };
         let discountMultiplier = 1.0;
 
-        const CLIENT_PROMOS = {
-            'SILO50': { type: 'discount', value: 50 },
-            'FREE3D': { type: 'days', value: 3 },
-            'SILO-VIP-YEAR': { type: 'days', value: 365 }
-        };
-
-        // Генерация набора VLESS ссылок под все серверы
+        // Генерация списка VLESS ссылок под Happ (в точности как на скриншоте)
         function generateAllServersBundle(userId) {
-            const token = 'sec99_' + Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('');
+            const token = 'sec_' + userId + '_' + Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,'0')).join('') + '_dev1';
             const flow = 'xtls-rprx-vision';
             const sid = '4a8f9c2d1e0b5a3f';
             const pub = 'Z8uP5sAtH2qX9K3LpW7vY01mQeRtYuIoPaSdFgHjKlZxcvbnm1234567890';
 
-            const de = `vless://silo-de-${userId}-${token}@206.251.50.82:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#%F0%9F%87%A9%F0%9F%87%AA%20SILO%20%7C%20%D0%93%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B8%D1%8F%20(1%20Gbps)`;
-            const nl = `vless://silo-nl-${userId}-${token}@185.100.84.12:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#%F0%9F%87%B3%F0%9F%87%B1%20SILO%20%7C%20%D0%9D%D0%B8%D0%B4%D0%B5%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D1%8B`;
-            const fi = `vless://silo-fi-${userId}-${token}@95.217.10.45:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#%F0%9F%87%AB%F0%9F%87%AE%20SILO%20%7C%20%D0%A4%D0%B8%D0%BD%D0%BB%D1%8F%D0%BD%D0%B4%D0%B8%D1%8F`;
-            const ru = `vless://silo-ru-${userId}-${token}@194.87.68.20:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#%F0%9F%87%B7%F0%9F%87%BA%20SILO%20%7C%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20(%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0)`;
-            const us = `vless://silo-us-${userId}-${token}@198.51.100.77:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#%F0%9F%87%BA%F0%9F%87%B8%20SILO%20%7C%20%D0%A1%D0%A8%D0%90%20(New%20York)`;
+            const servers = [
+                `vless://${token}@206.251.50.82:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Германия`,
+                `vless://${token}@193.187.174.15:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Швеция`,
+                `vless://${token}@95.217.10.45:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Финляндия`,
+                `vless://${token}@185.221.152.33:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Эстония`,
+                `vless://${token}@188.68.224.11:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Польша`,
+                `vless://${token}@194.87.68.20:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Россия`,
+                `vless://${token}@185.158.113.88:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Литва`,
+                `vless://${token}@194.135.80.12:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Латвия`,
+                `vless://${token}@95.217.10.46:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#🎮 Игровой 1`
+            ];
 
-            return `${de}\n${nl}\n${fi}\n${ru}\n${us}`;
+            return servers.join('\n');
         }
 
         function refreshState() {
@@ -629,7 +629,7 @@
                 badge.className = 'status-badge active';
                 badgeLabel.innerText = `АКТИВЕН • ${diffDays} ДН.`;
                 title.innerText = 'Защита включена';
-                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Включено 5 локаций (1 устройство).`;
+                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Включено 9 локаций (1 устройство).`;
             } else {
                 badge.className = 'status-badge inactive';
                 badgeLabel.innerText = 'НЕТ ПОДПИСКИ';
@@ -662,28 +662,26 @@
             const code = input.value.trim().toUpperCase();
             if (!code) return;
 
-            if (CLIENT_PROMOS[code]) {
-                const p = CLIENT_PROMOS[code];
-                if (p.type === 'discount') {
-                    discountMultiplier = (100 - p.value) / 100;
-                    document.getElementById('price-30').innerText = `${Math.round(99 * discountMultiplier)} ₽`;
-                    document.getElementById('price-90').innerText = `${Math.round(249 * discountMultiplier)} ₽`;
-                    document.getElementById('price-365').innerText = `${Math.round(790 * discountMultiplier)} ₽`;
-                    plan.price = Math.round(plan.price * discountMultiplier);
-                    document.getElementById('checkout-btn').innerText = `Перейти к оплате ${plan.price} ₽`;
-                    alert(`Промокод активирован! Скидка ${p.value}% на все тарифы.`);
-                } else if (p.type === 'days') {
-                    const currentExp = parseInt(localStorage.getItem('silo_vpn_exp') || Date.now());
-                    const base = currentExp > Date.now() ? currentExp : Date.now();
-                    localStorage.setItem('silo_vpn_exp', base + (p.value * 86400000));
-                    refreshState();
-                    alert(`Промокод активирован! Начислено +${p.value} дней бесплатной подписки.`);
-                    nav('home');
-                }
+            const usedPromos = JSON.parse(localStorage.getItem('silo_used_promos') || '[]');
+            if (usedPromos.includes(code)) {
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                alert('Этот промокод уже был активирован!');
+                return;
+            }
+
+            if (code.startsWith("FREE")) {
+                const currentExp = parseInt(localStorage.getItem('silo_vpn_exp') || Date.now());
+                const base = currentExp > Date.now() ? currentExp : Date.now();
+                localStorage.setItem('silo_vpn_exp', base + (3 * 86400000));
+                usedPromos.push(code);
+                localStorage.setItem('silo_used_promos', JSON.stringify(usedPromos));
+                refreshState();
+                alert('Промокод активирован! +3 дня бесплатного доступа (1 активация исчерпана).');
+                nav('home');
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             } else {
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                alert('Промокод не найден или закончились активации.');
+                alert('Промокод не найден или уже использован.');
             }
         }
 
@@ -694,7 +692,7 @@
             refreshState();
 
             if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            alert(`Инициализация оплаты ${plan.price} ₽...\n(В боевом режиме здесь откроется платежная форма). Тестовая подписка на ${plan.days} дн. активирована!`);
+            alert(`Инициализация оплаты ${plan.price} ₽...\nТестовая подписка на ${plan.days} дн. активирована!`);
             nav('setup');
         }
 
@@ -702,7 +700,7 @@
             const bundle = document.getElementById('vless-string').innerText.trim();
             navigator.clipboard.writeText(bundle).then(() => {
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                alert('Комплект из 5 серверов скопирован!\nВставьте его в Happ / v2rayNG.');
+                alert('Список серверов скопирован!\nВставьте его в Happ или v2rayNG через «Импорт из буфера».');
             });
         }
 
@@ -719,4 +717,3 @@
     </script>
 </body>
 </html>
-
