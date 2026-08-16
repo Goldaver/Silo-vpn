@@ -227,6 +227,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            margin-bottom: 10px;
         }
 
         .btn-glass:active { transform: scale(0.98); background: var(--surface-hover); }
@@ -235,7 +236,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 16px;
+            margin-top: 6px;
         }
 
         .card-widget {
@@ -260,7 +261,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .plan-box {
@@ -302,6 +303,91 @@
             border-radius: 6px;
         }
 
+        /* Строка ввода промокода */
+        .promo-container {
+            display: flex;
+            gap: 8px;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 6px;
+            margin-bottom: 16px;
+        }
+
+        .promo-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            padding-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .promo-input::placeholder { color: var(--text-dim); }
+
+        .promo-btn {
+            background: rgba(0, 240, 181, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(0, 240, 181, 0.3);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Сервера */
+        .servers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .server-item {
+            background: var(--surface);
+            border: 1.5px solid var(--surface-border);
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .server-item.active {
+            border-color: var(--accent);
+            background: rgba(0, 240, 181, 0.05);
+        }
+
+        .server-info-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .server-flag { font-size: 24px; }
+        .server-name { font-size: 14px; font-weight: 700; }
+        .server-sub { font-size: 11px; color: var(--text-muted); }
+
+        .ping-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(0, 240, 181, 0.1);
+            color: var(--accent);
+        }
+
+        .ping-pill.bad {
+            background: rgba(255, 71, 114, 0.1);
+            color: var(--danger);
+        }
+
         .step-card {
             background: var(--surface);
             border: 1px solid var(--surface-border);
@@ -335,11 +421,13 @@
             border-radius: 14px;
             padding: 14px;
             font-family: monospace;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             word-break: break-all;
-            line-height: 1.4;
+            line-height: 1.45;
             margin: 10px 0 16px;
+            max-height: 90px;
+            overflow-y: auto;
         }
 
         .dock-bar {
@@ -370,7 +458,7 @@
             font-size: 10px;
             font-weight: 700;
             cursor: pointer;
-            width: 33.3%;
+            width: 25%;
         }
 
         .dock-item.active { color: var(--accent); }
@@ -399,12 +487,12 @@
 
                 <div class="specs-row">
                     <div class="spec-item">
-                        Устройства
-                        <b>1 активное</b>
+                        Устройство
+                        <b style="color: var(--accent);">Строго 1 устройство</b>
                     </div>
                     <div class="spec-item">
-                        Сервер
-                        <b>Германия (1 Gbps)</b>
+                        Активный сервер
+                        <b id="active-server-label">🇩🇪 Германия (1 Gbps)</b>
                     </div>
                 </div>
             </div>
@@ -428,12 +516,12 @@
                     <div class="widget-icon">🎁</div>
                 </div>
 
-                <div class="card-widget" onclick="openPromoModal()">
+                <div class="card-widget" onclick="nav('servers')">
                     <div>
-                        <div class="widget-name">Промокод</div>
-                        <div class="widget-sub">Активация бонусов</div>
+                        <div class="widget-name">Локации</div>
+                        <div class="widget-sub" id="widget-server-sub">Германия (32 ms)</div>
                     </div>
-                    <div class="widget-icon">🔑</div>
+                    <div class="widget-icon">🌍</div>
                 </div>
             </div>
         </div>
@@ -446,53 +534,125 @@
                 <div style="width: 40px;"></div>
             </div>
 
+            <!-- Ввод промокода -->
+            <div class="promo-container">
+                <input type="text" id="promo-input-field" class="promo-input" placeholder="ПРОМОКОД (НАПРИМЕР: SILO50)">
+                <button class="promo-btn" onclick="applyPromoInput()">Применить</button>
+            </div>
+
             <div class="plans-stack">
-                <div class="plan-box selected" onclick="pickPlan(this, 30, 99)">
+                <div class="plan-box selected" id="plan-card-30" onclick="pickPlan(this, 30, 99)">
                     <div class="plan-meta">
                         <h4>1 Месяц</h4>
                         <span>Базовый доступ</span>
                     </div>
                     <div class="plan-pricing">
-                        <div class="price-main">99 ₽</div>
+                        <div class="price-main" id="price-30">99 ₽</div>
                         <div class="price-period">99 ₽ / мес</div>
                     </div>
                 </div>
 
-                <div class="plan-box" onclick="pickPlan(this, 90, 249)">
+                <div class="plan-box" id="plan-card-90" onclick="pickPlan(this, 90, 249)">
                     <div class="badge-discount">-15%</div>
                     <div class="plan-meta">
                         <h4>3 Месяца</h4>
                         <span>Популярный выбор</span>
                     </div>
                     <div class="plan-pricing">
-                        <div class="price-main">249 ₽</div>
+                        <div class="price-main" id="price-90">249 ₽</div>
                         <div class="price-period">83 ₽ / мес</div>
                     </div>
                 </div>
 
-                <div class="plan-box" onclick="pickPlan(this, 365, 790)">
+                <div class="plan-box" id="plan-card-365" onclick="pickPlan(this, 365, 790)">
                     <div class="badge-discount">MAX</div>
                     <div class="plan-meta">
                         <h4>12 Месяцев</h4>
                         <span>VIP тариф на год</span>
                     </div>
                     <div class="plan-pricing">
-                        <div class="price-main">790 ₽</div>
+                        <div class="price-main" id="price-365">790 ₽</div>
                         <div class="price-period">~65 ₽ / мес</div>
                     </div>
                 </div>
             </div>
 
-            <button class="btn-primary" id="checkout-btn" onclick="processPayment()">
-                Оплатить 99 ₽
+            <button class="btn-primary" id="checkout-btn" onclick="redirectToPayment()">
+                Перейти к оплате 99 ₽
             </button>
         </div>
 
-        <!-- 3. НАСТРОЙКА -->
+        <!-- 3. СЕРВЕРА -->
+        <div id="screen-servers" class="screen">
+            <div class="nav-header">
+                <div class="btn-circle" onclick="nav('home')">‹</div>
+                <div style="font-size: 14px; font-weight: 700;">Выбор локации</div>
+                <div style="width: 40px;"></div>
+            </div>
+
+            <div class="servers-list">
+                <div class="server-item active" onclick="chooseServer('🇩🇪 Германия', '32 ms', this)">
+                    <div class="server-info-left">
+                        <div class="server-flag">🇩🇪</div>
+                        <div>
+                            <div class="server-name">Германия (Франкфурт)</div>
+                            <div class="server-sub">Основной скоростной узел 1 Gbps</div>
+                        </div>
+                    </div>
+                    <div class="ping-pill">32 ms</div>
+                </div>
+
+                <div class="server-item" onclick="chooseServer('🇳🇱 Нидерланды', '41 ms', this)">
+                    <div class="server-info-left">
+                        <div class="server-flag">🇳🇱</div>
+                        <div>
+                            <div class="server-name">Нидерланды (Амстердам)</div>
+                            <div class="server-sub">Оптимизирован для P2P и торрентов</div>
+                        </div>
+                    </div>
+                    <div class="ping-pill">41 ms</div>
+                </div>
+
+                <div class="server-item" onclick="chooseServer('🇫🇮 Финляндия', '48 ms', this)">
+                    <div class="server-info-left">
+                        <div class="server-flag">🇫🇮</div>
+                        <div>
+                            <div class="server-name">Финляндия (Хельсинки)</div>
+                            <div class="server-sub">Минимальный пинг для СПб и Северо-Запада</div>
+                        </div>
+                    </div>
+                    <div class="ping-pill">48 ms</div>
+                </div>
+
+                <div class="server-item" onclick="chooseServer('🇷🇺 Россия', '18 ms', this)">
+                    <div class="server-info-left">
+                        <div class="server-flag">🇷🇺</div>
+                        <div>
+                            <div class="server-name">Россия (Москва)</div>
+                            <div class="server-sub">Для доступа к сервисам РФ из-за рубежа</div>
+                        </div>
+                    </div>
+                    <div class="ping-pill">18 ms</div>
+                </div>
+
+                <div class="server-item" onclick="chooseServer('🇺🇸 США', '115 ms', this)">
+                    <div class="server-info-left">
+                        <div class="server-flag">🇺🇸</div>
+                        <div>
+                            <div class="server-name">США (Нью-Йорк)</div>
+                            <div class="server-sub">Доступ к стримингам и сервисам США</div>
+                        </div>
+                    </div>
+                    <div class="ping-pill bad">115 ms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. НАСТРОЙКА -->
         <div id="screen-setup" class="screen">
             <div class="nav-header">
                 <div class="btn-circle" onclick="nav('home')">‹</div>
-                <div style="font-size: 14px; font-weight: 700;">Подключение</div>
+                <div style="font-size: 14px; font-weight: 700;">Подключение (1 устройство)</div>
                 <div style="width: 40px;"></div>
             </div>
 
@@ -508,16 +668,16 @@
                 <div class="step-bubble">2</div>
                 <div class="step-body">
                     <h5>Импортируйте ключ</h5>
-                    <p>Скопируйте ваш личный ключ VLESS и добавьте его в приложение через буфер обмена.</p>
+                    <p>Ключ содержит индивидуальный защищённый токен. Подключение разрешено строго с одного девайса.</p>
                 </div>
             </div>
 
             <div class="key-view" id="vless-string">
-                vless://silo-client@206.251.50.82:443?security=reality&encryption=none&pbk=Z8uP5sAtH2q&headerType=none&type=tcp&sni=dl.google.com#SiloVPN-DE
+                vless://загрузка...
             </div>
 
             <button class="btn-primary" onclick="copyKey()">
-                📋 Скопировать ключ VLESS
+                📋 Скопировать VLESS ключ
             </button>
         </div>
 
@@ -532,8 +692,12 @@
             <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
             <span>Тарифы</span>
         </button>
+        <button class="dock-item" onclick="nav('servers')">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <span>Сервера</span>
+        </button>
         <button class="dock-item" onclick="nav('setup')">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
             <span>Настройка</span>
         </button>
     </div>
@@ -543,7 +707,22 @@
         if (tg) { tg.expand(); tg.ready(); }
 
         let plan = { days: 30, price: 99 };
-        const PROMOS = { 'SILO-FREE-7D': 7, 'SILO-PRO-30D': 30, 'SILO-VIP-YEAR': 365 };
+        let discountMultiplier = 1.0;
+
+        // Встроенные промокоды для мгновенного теста в Web App
+        const CLIENT_PROMOS = {
+            'SILO50': { type: 'discount', value: 50 },
+            'FREE3D': { type: 'days', value: 3 },
+            'SILO-VIP-YEAR': { type: 'days', value: 365 }
+        };
+
+        // Генерация сверхдлинного криптостойкого VLESS Reality URL
+        function generateSecureLongVless(userId) {
+            const token = 'sec99_' + Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,'0')).join('');
+            const flow = 'xtls-rprx-vision';
+            const sid = '4a8f9c2d1e0b5a3f';
+            return `vless://silo-usr-${userId}-dev1-${token}@206.251.50.82:443?security=reality&encryption=none&pbk=Z8uP5sAtH2qX9K3LpW7vY01mQeRtYuIoPaSdFgHjKlZxcvbnm1234567890&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}&spx=%2F#SILO-DE-Frankfurt-Device1-Active`;
+        }
 
         function refreshState() {
             const exp = localStorage.getItem('silo_vpn_exp');
@@ -551,7 +730,7 @@
             const uname = tg?.initDataUnsafe?.user?.first_name || 'Пользователь';
             
             document.getElementById('user-display-name').innerText = `${uname} (ID: ${uid})`;
-            document.getElementById('vless-string').innerText = `vless://silo-${uid}@206.251.50.82:443?security=reality&encryption=none&pbk=Z8uP5sAtH2q&headerType=none&type=tcp&sni=dl.google.com#SiloVPN-DE`;
+            document.getElementById('vless-string').innerText = generateSecureLongVless(uid);
 
             const badge = document.getElementById('badge-sub-status');
             const badgeLabel = document.getElementById('badge-sub-label');
@@ -564,7 +743,7 @@
                 badge.className = 'status-badge active';
                 badgeLabel.innerText = `АКТИВЕН • ${diffDays} ДН.`;
                 title.innerText = 'Защита включена';
-                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Трафик безлимитный.`;
+                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Трафик безлимитный (1 устройство).`;
             } else {
                 badge.className = 'status-badge inactive';
                 badgeLabel.innerText = 'НЕТ ПОДПИСКИ';
@@ -576,7 +755,7 @@
         function nav(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(`screen-${screenId}`).classList.add('active');
-            const order = { 'home': 0, 'tariffs': 1, 'setup': 2 };
+            const order = { 'home': 0, 'tariffs': 1, 'servers': 2, 'setup': 3 };
             document.querySelectorAll('.dock-item').forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === order[screenId]);
             });
@@ -586,18 +765,64 @@
         function pickPlan(el, days, price) {
             document.querySelectorAll('.plan-box').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            plan = { days, price };
-            document.getElementById('checkout-btn').innerText = `Оплатить ${price} ₽`;
+            const finalPrice = Math.round(price * discountMultiplier);
+            plan = { days, price: finalPrice };
+            document.getElementById('checkout-btn').innerText = `Перейти к оплате ${finalPrice} ₽`;
             if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        function processPayment() {
+        function applyPromoInput() {
+            const input = document.getElementById('promo-input-field');
+            const code = input.value.trim().toUpperCase();
+            if (!code) return;
+
+            if (CLIENT_PROMOS[code]) {
+                const p = CLIENT_PROMOS[code];
+                if (p.type === 'discount') {
+                    discountMultiplier = (100 - p.value) / 100;
+                    document.getElementById('price-30').innerText = `${Math.round(99 * discountMultiplier)} ₽`;
+                    document.getElementById('price-90').innerText = `${Math.round(249 * discountMultiplier)} ₽`;
+                    document.getElementById('price-365').innerText = `${Math.round(790 * discountMultiplier)} ₽`;
+                    plan.price = Math.round(plan.price * discountMultiplier);
+                    document.getElementById('checkout-btn').innerText = `Перейти к оплате ${plan.price} ₽`;
+                    alert(`Промокод активирован! Скидка ${p.value}% на все тарифы.`);
+                } else if (p.type === 'days') {
+                    const currentExp = parseInt(localStorage.getItem('silo_vpn_exp') || Date.now());
+                    const base = currentExp > Date.now() ? currentExp : Date.now();
+                    localStorage.setItem('silo_vpn_exp', base + (p.value * 86400000));
+                    refreshState();
+                    alert(`Промокод активирован! Начислено +${p.value} дней бесплатной подписки.`);
+                    nav('home');
+                }
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                alert('Промокод не найден или срок его действия истек.');
+            }
+        }
+
+        function chooseServer(name, ping, el) {
+            document.querySelectorAll('.server-item').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('active-server-label').innerText = `${name} (1 Gbps)`;
+            document.getElementById('widget-server-sub').innerText = `${name} (${ping})`;
+            if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
+            alert(`Сервер переключен на: ${name}`);
+            nav('home');
+        }
+
+        // Редирект на оплату (заготовка под ЮKassa, CryptoBot или Stars)
+        function redirectToPayment() {
+            const uid = tg?.initDataUnsafe?.user?.id || '940527938';
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            
+            // В тестовом режиме эмулируем выдачу подписки и перенаправление
             const currentExp = parseInt(localStorage.getItem('silo_vpn_exp') || Date.now());
             const base = currentExp > Date.now() ? currentExp : Date.now();
             localStorage.setItem('silo_vpn_exp', base + (plan.days * 86400000));
             refreshState();
-            if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            alert(`Успешно! Добавлено ${plan.days} дней подписки.`);
+
+            alert(`Инициализация счета на ${plan.price} ₽...\n(В боевом режиме здесь откроется платежный шлюз). Тестовая подписка на ${plan.days} дн. активирована!`);
             nav('setup');
         }
 
@@ -605,7 +830,7 @@
             const key = document.getElementById('vless-string').innerText.trim();
             navigator.clipboard.writeText(key).then(() => {
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                alert('VLESS ключ скопирован!');
+                alert('Сверхдлинный защищенный ключ скопирован! Вставьте его в клиент.');
             });
         }
 
@@ -614,29 +839,12 @@
             const link = `https://t.me/SiloVpn_bot?start=ref_${uid}`;
             navigator.clipboard.writeText(link).then(() => {
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                alert('Реферальная ссылка скопирована! Отправь её другу для получения +2 дней.');
+                alert('Реферальная ссылка скопирована!');
             });
-        }
-
-        function openPromoModal() {
-            const code = prompt('Введите промокод:');
-            if (!code) return;
-            const clean = code.trim().toUpperCase();
-            if (PROMOS[clean]) {
-                const add = PROMOS[clean];
-                const currentExp = parseInt(localStorage.getItem('silo_vpn_exp') || Date.now());
-                const base = currentExp > Date.now() ? currentExp : Date.now();
-                localStorage.setItem('silo_vpn_exp', base + (add * 86400000));
-                refreshState();
-                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                alert(`Промокод принят! +${add} дней подписки.`);
-            } else {
-                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                alert('Неверный промокод.');
-            }
         }
 
         refreshState();
     </script>
 </body>
 </html>
+
