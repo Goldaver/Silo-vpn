@@ -483,7 +483,6 @@
                 <div style="width: 40px;"></div>
             </div>
 
-            <!-- Ввод промокода -->
             <div class="promo-container">
                 <input type="text" id="promo-input-field" class="promo-input" placeholder="ПРОМОКОД (1 АКТИВАЦИЯ)">
                 <button class="promo-btn" onclick="applyPromoInput()">Применить</button>
@@ -556,11 +555,15 @@
             </div>
 
             <div class="key-view" id="vless-string">
-                vless://загрузка...
+                Ключ недоступен. Требуется активная подписка.
             </div>
 
             <button class="btn-primary" onclick="copyKey()">
                 📋 Скопировать список серверов
+            </button>
+            
+            <button class="btn-glass" style="margin-top: 10px; border-color: rgba(255, 71, 114, 0.3); color: var(--danger);" onclick="resetLocalData()">
+                🗑 Сбросить старую тестовую подписку
             </button>
         </div>
 
@@ -686,7 +689,7 @@
             }
         }
 
-        // Блокировка оплаты до подключения реальной платежки
+        // Блокировка: дни НЕ выдаются, ключи НЕ даются
         function redirectToPayment() {
             if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
             alert('Оплата временно недоступна. Ведутся технические работы по подключению платёжного шлюза.');
@@ -716,7 +719,16 @@
             });
         }
 
+        function resetLocalData() {
+            localStorage.removeItem('silo_vpn_exp');
+            localStorage.removeItem('silo_used_promos');
+            refreshState();
+            alert('Старые данные подписки очищены.');
+            nav('home');
+        }
+
         refreshState();
     </script>
 </body>
 </html>
+
