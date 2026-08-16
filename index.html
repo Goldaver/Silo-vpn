@@ -441,7 +441,7 @@
                     </div>
                     <div class="spec-item">
                         Локации в ключе
-                        <b>9 серверов</b>
+                        <b>3 сервера (DE, NL, RU)</b>
                     </div>
                 </div>
             </div>
@@ -484,7 +484,7 @@
             </div>
 
             <div class="promo-container">
-                <input type="text" id="promo-input-field" class="promo-input" placeholder="ПРОМОКОД (1 АКТИВАЦИЯ)">
+                <input type="text" id="promo-input-field" class="promo-input" placeholder="...">
                 <button class="promo-btn" onclick="applyPromoInput()">Применить</button>
             </div>
 
@@ -492,7 +492,7 @@
                 <div class="plan-box selected" onclick="pickPlan(this, 30, 99)">
                     <div class="plan-meta">
                         <h4>1 Месяц</h4>
-                        <span>Все локации (9 серверов)</span>
+                        <span>Все локации (3 сервера)</span>
                     </div>
                     <div class="plan-pricing">
                         <div class="price-main" id="price-30">99 ₽</div>
@@ -542,7 +542,7 @@
                 <div class="step-bubble">1</div>
                 <div class="step-body">
                     <h5>Скачайте приложение</h5>
-                    <p><b>iOS (iPhone):</b> Happ, Streisand или Shadowrocket<br><b>Android:</b> v2rayNG или Karing</p>
+                    <p><b>iOS (iPhone):</b> Happ, Streisand или Shadowrocket<br><b>Android:</b> Happ, v2rayNG или Karing</p>
                 </div>
             </div>
 
@@ -560,10 +560,6 @@
 
             <button class="btn-primary" onclick="copyKey()">
                 📋 Скопировать список серверов
-            </button>
-            
-            <button class="btn-glass" style="margin-top: 10px; border-color: rgba(255, 71, 114, 0.3); color: var(--danger);" onclick="resetLocalData()">
-                🗑 Сбросить старую тестовую подписку
             </button>
         </div>
 
@@ -599,14 +595,8 @@
 
             const servers = [
                 `vless://${token}@206.251.50.82:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Германия`,
-                `vless://${token}@193.187.174.15:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Швеция`,
-                `vless://${token}@95.217.10.45:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Финляндия`,
-                `vless://${token}@185.221.152.33:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Эстония`,
-                `vless://${token}@188.68.224.11:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Польша`,
-                `vless://${token}@194.87.68.20:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Россия`,
-                `vless://${token}@185.158.113.88:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Литва`,
-                `vless://${token}@194.135.80.12:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Латвия`,
-                `vless://${token}@95.217.10.46:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#🎮 Игровой 1`
+                `vless://${token}@185.100.84.12:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Нидерланды`,
+                `vless://${token}@194.87.68.20:443?security=reality&encryption=none&pbk=${pub}&headerType=none&type=tcp&sni=dl.google.com&sid=${sid}&flow=${flow}#Россия`
             ];
 
             return servers.join('\n');
@@ -631,7 +621,7 @@
                 badge.className = 'status-badge active';
                 badgeLabel.innerText = `АКТИВЕН • ${diffDays} ДН.`;
                 title.innerText = 'Защита включена';
-                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Включено 9 локаций (1 устройство).`;
+                desc.innerText = `Подписка действительна до ${date.toLocaleDateString('ru-RU')}. Включено 3 локации (1 устройство).`;
                 vlessString.innerText = generateAllServersBundle(uid);
             } else {
                 badge.className = 'status-badge inactive';
@@ -680,7 +670,7 @@
                 usedPromos.push(code);
                 localStorage.setItem('silo_used_promos', JSON.stringify(usedPromos));
                 refreshState();
-                alert('Промокод активирован! +3 дня бесплатного доступа (1 активация исчерпана).');
+                alert('Промокод активирован! +3 дня бесплатного доступа.');
                 nav('home');
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             } else {
@@ -689,7 +679,6 @@
             }
         }
 
-        // Блокировка: дни НЕ выдаются, ключи НЕ даются
         function redirectToPayment() {
             if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
             alert('Оплата временно недоступна. Ведутся технические работы по подключению платёжного шлюза.');
@@ -717,14 +706,6 @@
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
                 alert('Реферальная ссылка скопирована!');
             });
-        }
-
-        function resetLocalData() {
-            localStorage.removeItem('silo_vpn_exp');
-            localStorage.removeItem('silo_used_promos');
-            refreshState();
-            alert('Старые данные подписки очищены.');
-            nav('home');
         }
 
         refreshState();
