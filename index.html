@@ -611,7 +611,7 @@
 
         function copyRef() {
             const uid = tg?.initDataUnsafe?.user?.id || '940527938';
-            const link = `https://t.me/your_silo_bot?start=ref_${uid}`;
+            const link = `https://t.me/SiloVpn_bot?start=ref_${uid}`;
             navigator.clipboard.writeText(link).then(() => {
                 if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
                 alert('Реферальная ссылка скопирована! Отправь её другу для получения +2 дней.');
